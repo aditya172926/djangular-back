@@ -1,9 +1,10 @@
 from django.shortcuts import render
+from .models import Movie
 from django.contrib.auth.models import User
 from rest_framework import viewsets, generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from myproject.api.serializers import UserSerializer, RegisterSerializer
+from api.serializers import UserSerializer, RegisterSerializer, MovieSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -44,3 +45,11 @@ class CustomObtainAuthToken(ObtainAuthToken):
         rresponse = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
         token = Token.objects.get(key = rresponse.data['token'])
         return Response({'token': token.key, 'id': token.user_id})
+
+class MovieViewSet(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # In this function both get movies and post movies are working
